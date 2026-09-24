@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Notes</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+.header {
+    background: #6c63ff;
+    color: white;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 {
+    margin: 0;
+}
+
+.add-btn {
+    background: white;
+    color: #6c63ff;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    font-size: 25px;
+}
+
+.container {
+    padding: 15px;
+}
+
+.note {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.note h3 {
+    margin: 0 0 8px;
+}
+
+.note p {
+    margin: 0;
+    color: #555;
+}
+
+.empty {
+    text-align: center;
+    color: #888;
+    margin-top: 80px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    background: white;
+    width: 90%;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+textarea {
+    height: 150px;
+    resize: none;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #6c63ff;
+    color: white;
+    font-size: 16px;
+}
+
+.close-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #ddd;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>📝 My Notes</h2>
+    <button class="add-btn" onclick="openNote()">+</button>
+</div>
+
+<div class="container" id="notesContainer">
+    <div class="empty">
+        No notes yet.<br>
+        Tap + to add your first note.
+    </div>
+</div>
+
+<div class="modal" id="noteModal">
+
+    <div class="box">
+
+        <h2>Add Note</h2>
+
+        <input type="text" id="title" placeholder="Note title">
+
+        <textarea id="content" placeholder="Write your note..."></textarea>
+
+        <button class="save-btn" onclick="saveNote()">Save Note</button>
+
+        <button class="close-btn" onclick="closeNote()">Cancel</button>
+
+    </div>
+
+</div>
+
+<script>
+
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+function openNote() {
+    document.getElementById("noteModal").style.display = "flex";
+}
+
+function closeNote() {
+    document.getElementById("noteModal").style.display = "none";
+}
+
+function saveNote() {
+
+    let title = document.getElementById("title").value;
+    let content = document.getElementById("content").value;
+
+    if (title.trim() === "" || content.trim() === "") {
+        alert("Please enter title and note.");
+        return;
+    }
+
+    let note = {
+        title: title,
+        content: content
+    };
+
+    notes.push(note);
+
+    localStorage.setItem("notes", JSON.stringify(notes));
+
+    document.getElementById("title").value = "";
+    document.getElementById("content").value = "";
+
+    closeNote();
+
+    displayNotes();
+}
+
+function displayNotes() {
+
+    let container = document.getElementById("notesContainer");
+
+    if (notes.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                No notes yet.<br>
+                Tap + to add your first note.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    notes.forEach((note) => {
+
+        container.innerHTML += `
+            <div class="note">
+                <h3>${note.title}</h3>
+                <p>${note.content}</p>
+            </div>
+        `;
+
+    });
+}
+
+displayNotes();
+
+</script>
+
+</body>
+  </html>
