@@ -179,7 +179,7 @@ function saveNote() {
 
     notes.push(note);
 
-    localStorage.setItem("notes", JSON.stringify(notes));
+    saveNotesToDB();
 
     document.getElementById("title").value = "";
     document.getElementById("content").value = "";
@@ -188,7 +188,31 @@ function saveNote() {
 
     displayNotes();
 }
+let db;
 
+const request = indexedDB.open("MyNotesDB", 1);
+
+request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    db.createObjectStore("notes", {
+        keyPath: "id",
+        autoIncrement: true
+    });
+};
+
+request.onsuccess = function(event) {
+    db = event.target.result;
+};
+
+function saveNotesToDB() {
+    const transaction = db.transaction(["notes"], "readwrite");
+    const store = transaction.objectStore("notes");
+
+    store.add({
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+    });
+    }
 function displayNotes() {
 
     let container = document.getElementById("notesContainer");
